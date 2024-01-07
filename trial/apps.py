@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class TrialsettingConfig(AppConfig):
+class TrialConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'trialsetting'
+    name = 'trial'
