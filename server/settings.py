@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-y4ybm!faoq%b#0xaw)%r)20=n&@@7kq34b+ss$&33#le0tes$#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['bookkeeper-server-405b5350d93b.herokuapp.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
