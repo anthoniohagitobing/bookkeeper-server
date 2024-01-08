@@ -9,6 +9,10 @@ from trial.models import DrinkTrial
 from .serializers import ItemTrialSerializer, DrinkTrialSerializer
 
 @api_view(['GET'])
+def test(request):
+  return Response("Bookkeeper server successfully deployed")
+
+@api_view(['GET'])
 def getData(request):
   # person = {'name':'Dennis', 'age':28}
   # return Response(person)
