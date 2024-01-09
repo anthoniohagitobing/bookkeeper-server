@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # Environment variables
-load_dotenv()
+# load_dotenv()
 CURRENT_ENVIRONMENT = os.getenv('CURRENT_ENVIRONMENT')
 print(CURRENT_ENVIRONMENT)
 DATABASE_URL = os.getenv('DATABASE_URL')
@@ -136,6 +136,9 @@ DATABASES = {
         conn_health_checks=True,
     ),
 }
+
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
