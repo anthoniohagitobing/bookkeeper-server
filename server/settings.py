@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
+import os
+from dotenv import load_dotenv
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,14 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-CURRENT_ENVIRONMENT = config('CURRENT_ENVIRONMENT')
-print(CURRENT_ENVIRONMENT)
+# Environment variables
+load_dotenv()
+CURRENT_ENVIRONMENT = os.environ['CURRENT_ENVIRONMENT']
+DATABASE_URL = os.environ['DATABASE_URL']
+# DATABASE_NAME = config('DATABASE_NAME')
+# DATABASE_USER = config('DATABASE_USER')
+# DATABASE_PASSWORD = config('DATABASE_PASSWORD')
+# DATABASE_HOST = config('DATABASE_HOST')
+# DATABASE_PORT = config('DATABASE_PORT')
+
+# Configuring debug and rest_framework
 if CURRENT_ENVIRONMENT == 'local':
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
     # For rest framework
     # this will only send json, not rest framwork special website
-else:
+elif CURRENT_ENVIRONMENT == 'heroku':
     DEBUG = False
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
@@ -40,7 +51,7 @@ else:
     }
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = os.environ['SECRET_KEY']
 
 ALLOWED_HOSTS = ['bookkeeper-server-405b5350d93b.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -55,9 +66,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'whitenoise.runserver_nostatic',
     'rest_framework',
     'api',
-    'trial'
+    'trial',
 ]
 
 MIDDLEWARE = [
@@ -68,7 +80,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+# For whitenoise
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'server.urls'
 
@@ -94,13 +110,30 @@ WSGI_APPLICATION = 'server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': DATABASE_NAME,
+#         'USER': DATABASE_USER,
+#         'PASSWORD': DATABASE_PASSWORD,
+#         'HOST': DATABASE_HOST,
+#         'PORT': DATABASE_PORT,
+#     }
+# }
+
+DATABASES = {
+    'default': dj_database_url.config(
+        conn_max_age=600,
+        conn_health_checks=True,
+    ),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
