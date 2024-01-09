@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import dj_database_url
 
 
@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # Environment variables
-load_dotenv()
+load_dotenv(find_dotenv())
 CURRENT_ENVIRONMENT = os.environ['CURRENT_ENVIRONMENT']
 DATABASE_URL = os.environ['DATABASE_URL']
 # DATABASE_NAME = config('DATABASE_NAME')
