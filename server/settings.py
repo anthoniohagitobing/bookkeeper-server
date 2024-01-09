@@ -11,9 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os
-from dotenv import load_dotenv, find_dotenv
-import dj_database_url
+# import os
+# import dj_database_url
+from decouple import config
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,14 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # Environment variables
-load_dotenv(find_dotenv())
-CURRENT_ENVIRONMENT = os.environ['CURRENT_ENVIRONMENT']
-DATABASE_URL = os.environ['DATABASE_URL']
-# DATABASE_NAME = config('DATABASE_NAME')
-# DATABASE_USER = config('DATABASE_USER')
-# DATABASE_PASSWORD = config('DATABASE_PASSWORD')
-# DATABASE_HOST = config('DATABASE_HOST')
-# DATABASE_PORT = config('DATABASE_PORT')
+CURRENT_ENVIRONMENT = config('CURRENT_ENVIRONMENT')
+DATABASE_URL = config('DATABASE_URL')
+DATABASE_NAME = config('DATABASE_NAME')
+DATABASE_USER = config('DATABASE_USER')
+DATABASE_PASSWORD = config('DATABASE_PASSWORD')
+DATABASE_HOST = config('DATABASE_HOST')
+DATABASE_PORT = config('DATABASE_PORT')
 
 # Configuring debug and rest_framework
 if CURRENT_ENVIRONMENT == 'local':
@@ -51,7 +50,7 @@ elif CURRENT_ENVIRONMENT == 'heroku':
     }
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = config('SECRET_KEY')
 
 ALLOWED_HOSTS = ['bookkeeper-server-405b5350d93b.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -117,23 +116,23 @@ WSGI_APPLICATION = 'server.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': DATABASE_NAME,
-#         'USER': DATABASE_USER,
-#         'PASSWORD': DATABASE_PASSWORD,
-#         'HOST': DATABASE_HOST,
-#         'PORT': DATABASE_PORT,
-#     }
-# }
-
 DATABASES = {
-    'default': dj_database_url.config(
-        conn_max_age=600,
-        conn_health_checks=True,
-    ),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': DATABASE_NAME,
+        'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'HOST': DATABASE_HOST,
+        'PORT': DATABASE_PORT,
+    }
 }
+
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         conn_max_age=600,
+#         conn_health_checks=True,
+#     ),
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
