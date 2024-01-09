@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,13 +21,29 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y4ybm!faoq%b#0xaw)%r)20=n&@@7kq34b+ss$&33#le0tes$#'
+CURRENT_ENVIRONMENT = config('CURRENT_ENVIRONMENT')
+print(CURRENT_ENVIRONMENT)
+if CURRENT_ENVIRONMENT == 'local':
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = True
+    # For rest framework
+    # this will only send json, not rest framwork special website
+else:
+    DEBUG = False
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        ),
+        'DEFAULT_PARSER_CLASSES': (
+            'rest_framework.parsers.JSONParser',
+        )
+    }
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = config('SECRET_KEY')
 
 ALLOWED_HOSTS = ['bookkeeper-server-405b5350d93b.herokuapp.com', 'localhost', '127.0.0.1']
+
 
 
 # Application definition
