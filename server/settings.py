@@ -27,6 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Environment variables
 load_dotenv()
 CURRENT_ENVIRONMENT = os.getenv('CURRENT_ENVIRONMENT')
+print(CURRENT_ENVIRONMENT)
 DATABASE_URL = os.getenv('DATABASE_URL')
 DATABASE_NAME = os.getenv('DATABASE_NAME')
 DATABASE_USER = os.getenv('DATABASE_USER')
