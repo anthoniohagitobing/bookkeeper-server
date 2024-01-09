@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-# import os
+from dotenv import load_dotenv
+import os
 # import dj_database_url
 from decouple import config
 
@@ -24,13 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # Environment variables
-CURRENT_ENVIRONMENT = config('CURRENT_ENVIRONMENT')
-DATABASE_URL = config('DATABASE_URL')
-DATABASE_NAME = config('DATABASE_NAME')
-DATABASE_USER = config('DATABASE_USER')
-DATABASE_PASSWORD = config('DATABASE_PASSWORD')
-DATABASE_HOST = config('DATABASE_HOST')
-DATABASE_PORT = config('DATABASE_PORT')
+load_dotenv()
+CURRENT_ENVIRONMENT = os.getenv('CURRENT_ENVIRONMENT')
+DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_NAME = os.getenv('DATABASE_NAME')
+DATABASE_USER = os.getenv('DATABASE_USER')
+DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
+DATABASE_HOST = os.getenv('DATABASE_HOST')
+DATABASE_PORT = os.getenv('DATABASE_PORT')
 
 # Configuring debug and rest_framework
 if CURRENT_ENVIRONMENT == 'local':
@@ -50,7 +52,7 @@ elif CURRENT_ENVIRONMENT == 'heroku':
     }
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 ALLOWED_HOSTS = ['bookkeeper-server-405b5350d93b.herokuapp.com', 'localhost', '127.0.0.1']
 
