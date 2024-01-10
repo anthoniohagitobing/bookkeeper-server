@@ -12,6 +12,7 @@ class ItemTrial(models.Model):
   # ItemTrial.objects.create(name="Item #3")
   # items = ItemTrial.objects.all()
   # print(items)
+# test
 
 class DrinkTrial(models.Model):
   name = models.CharField(max_length=200)

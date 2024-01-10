@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-# from members.views import (
+# from users.views import (
 # 	UserRegistrationAPIView,
 # 	UserLoginAPIView,
 # 	UserViewAPI,

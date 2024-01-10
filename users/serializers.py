@@ -26,7 +26,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class UserLoginSerializer(serializers.Serializer):
 	email = serializers.CharField(max_length=100)
-	username = serializers.CharField(max_length=100, read_only=True)
+	# username = serializers.CharField(max_length=100, read_only=True)
 	password = serializers.CharField(max_length=100, min_length=8, style={'input_type': 'password'})
 	token = serializers.CharField(max_length=255, read_only=True)
 

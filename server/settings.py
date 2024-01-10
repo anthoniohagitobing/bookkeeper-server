@@ -41,7 +41,7 @@ if CURRENT_ENVIRONMENT == 'local':
     DEBUG = True
     # For rest framework
     # this will only send json, not rest framwork special website
-    
+
     # REST_FRAMEWORK = {
     #     'DEFAULT_PERMISSION_CLASSES': (
     #         'rest_framework.permissions.IsAuthenticated',
@@ -87,8 +87,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'trial',
-    'members.apps.MembersConfig',
+    'users',
 ]
+
+# custom user model
+AUTH_USER_MODEL = 'users.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -152,9 +155,6 @@ DATABASES = {
         conn_health_checks=True,
     ),
 }
-
-# custom user model
-AUTH_USER_MODEL = 'members.User'
 
 # db_from_env = dj_database_url.config(conn_max_age=600)
 # DATABASES['default'].update(db_from_env)

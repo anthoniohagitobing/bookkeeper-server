@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from members.serializers import UserRegistrationSerializer, UserLoginSerializer
+from users.serializers import UserRegistrationSerializer, UserLoginSerializer
 from rest_framework.views import APIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -19,9 +19,9 @@ class UserRegisteration(APIView):
 	authentication_classes = (TokenAuthentication,)
 	permission_classes = (AllowAny,)
 
-	def get(self, request):
-		content = { 'message': 'Hello!' }
-		return Response(content)
+	# def get(self, request):
+	# 	content = { 'message': 'Hello!' }
+	# 	return Response(content)
 
 	def post(self, request):
 		validated_data = custom_validation(request.data)
@@ -40,7 +40,7 @@ class UserRegisteration(APIView):
 
 
 class UserLogin(APIView):
-	# serializer_class = UserLoginSerializer
+	serializer_class = UserLoginSerializer
 	authentication_classes = (TokenAuthentication,)
 	permission_classes = (AllowAny,)
 
