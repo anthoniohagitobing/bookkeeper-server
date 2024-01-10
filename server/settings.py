@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 import dj_database_url
 # from decouple import config
-# from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,6 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # Environment variables
+load_dotenv(find_dotenv())
+    # this is required for enabling environment variables locally
 CURRENT_ENVIRONMENT = os.getenv('CURRENT_ENVIRONMENT')
 DATABASE_URL = os.getenv('DATABASE_URL')
 DATABASE_NAME = os.getenv('DATABASE_NAME')
@@ -39,6 +41,15 @@ if CURRENT_ENVIRONMENT == 'local':
     DEBUG = True
     # For rest framework
     # this will only send json, not rest framwork special website
+
+    # REST_FRAMEWORK = {
+    #     'DEFAULT_PERMISSION_CLASSES': (
+    #         'rest_framework.permissions.IsAuthenticated',
+    #     ),
+    #     'DEFAULT_AUTHENTICATION_CLASSES': (
+    #         'rest_framework.authentication.TokenAuthentication',
+    #     ),
+    # }
 elif CURRENT_ENVIRONMENT == 'heroku':
     DEBUG = False
     REST_FRAMEWORK = {
@@ -47,7 +58,13 @@ elif CURRENT_ENVIRONMENT == 'heroku':
         ),
         'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.JSONParser',
-        )
+        ),
+        # 'DEFAULT_PERMISSION_CLASSES': (
+        #     'rest_framework.permissions.IsAuthenticated',
+        # ),
+        # 'DEFAULT_AUTHENTICATION_CLASSES': (
+        #     'rest_framework.authentication.TokenAuthentication',
+        # ),
     }
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -70,7 +87,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'trial',
+    'users',
 ]
+
+# custom user model
+AUTH_USER_MODEL = 'users.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
