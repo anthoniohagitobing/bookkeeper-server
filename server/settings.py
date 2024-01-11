@@ -29,11 +29,17 @@ load_dotenv(find_dotenv())
     # this is required for enabling environment variables locally
 CURRENT_ENVIRONMENT = os.getenv('CURRENT_ENVIRONMENT')
 DATABASE_URL = os.getenv('DATABASE_URL')
-DATABASE_NAME = os.getenv('DATABASE_NAME')
-DATABASE_USER = os.getenv('DATABASE_USER')
-DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
-DATABASE_HOST = os.getenv('DATABASE_HOST')
-DATABASE_PORT = os.getenv('DATABASE_PORT')
+# DATABASE_NAME = os.getenv('DATABASE_NAME')
+# DATABASE_USER = os.getenv('DATABASE_USER')
+# DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
+# DATABASE_HOST = os.getenv('DATABASE_HOST')
+# DATABASE_PORT = os.getenv('DATABASE_PORT')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+
 
 # Configuring debug and rest_framework
 if CURRENT_ENVIRONMENT == 'local':
@@ -205,3 +211,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
