@@ -22,18 +22,29 @@ from multiprocessing import context
 
 # Create User
 class UserRegister(GenericAPIView):
+    '''
+		This view creates new user
+    '''
     serializer_class = UserRegisterSerializer
 
     def post(self, request):
         user = request.data
         
-		# Verify data with serializer
-        serializer=self.serializer_class(data=user)
-        # If valid
+		# Assign serializer 
+        serializer = self.serializer_class(data=user)
+        
+		# Invoke validation method, use raise_exception to throw error if validation fail
         if serializer.is_valid(raise_exception=True):
-            # Save
+            # Run save method to 
             serializer.save()
             
+			# For no otp path,
+				# TODO: Bypass the token, need to add input for create user and set verified to true
+			# return Response({
+            #     'message':'thanks for signing up a passcode has be sent to verify your email'
+			# }, status=status.HTTP_201_CREATED)
+
+			# For otp path,
 			# Use serializer data to generate otp
             user_data = serializer.data
             send_generated_otp_to_email(user_data['email'], request)
@@ -43,89 +54,153 @@ class UserRegister(GenericAPIView):
                 'data':user_data,
                 'message':'thanks for signing up a passcode has be sent to verify your email'
             }, status=status.HTTP_201_CREATED)
-        # If error
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # If validate did not pass, it will return error
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+			# this is not required as we already have raise_exception
 
 
-class VerifyUserEmail(GenericAPIView):
+class VerifyEmail(GenericAPIView):
+    '''
+    	This view takes in otp and change the user verified to try if otp is correct
+    '''
     def post(self, request):
         try:
             passcode = request.data.get('otp')
-            user_pass_obj=OneTimePassword.objects.get(otp=passcode)
-            user=user_pass_obj.user
+            
+			# Retrieve otp from otp model, based on OTP and extract user. This is possible as they are one to one model 
+            # TODO: need to get based on id as well to avoid duplicate otp
+            # TODO: need to recreate OTP url
+            user_pass_obj = OneTimePassword.objects.get(otp=passcode) 
+            user = user_pass_obj.user
+            
+			# check if user is verified, if not proceed
             if not user.is_verified:
+                # modify is_verified, then save
                 user.is_verified=True
                 user.save()
+                
+				# return ok message
                 return Response({
                     'message':'account email verified successfully'
                 }, status=status.HTTP_200_OK)
+            
+            # if already verified, return verified message
             return Response({'message':'passcode is invalid user is already verified'}, status=status.HTTP_204_NO_CONTENT)
+        
+		# If fail to find passcode, return error
         except OneTimePassword.DoesNotExist as identifier:
             return Response({'message':'passcode not provided'}, status=status.HTTP_400_BAD_REQUEST)
         
 
-class LoginUserView(GenericAPIView):
-    serializer_class=LoginSerializer
+class UserLogin(GenericAPIView):
+    '''
+    	This view allow user to log in
+    '''
+    serializer_class = LoginSerializer
+    
     def post(self, request):
-        serializer= self.serializer_class(data=request.data, context={'request': request})
+        # Assigng serializer
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        
+		# Invoke validation method, use raise_exception to throw error if validation fail
         serializer.is_valid(raise_exception=True)
+        
+		# Return data if is valid
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-class PasswordResetRequestView(GenericAPIView):
-    serializer_class=PasswordResetRequestSerializer
-
-    def post(self, request):
-        serializer=self.serializer_class(data=request.data, context={'request':request})
-        serializer.is_valid(raise_exception=True)
-        return Response({'message':'we have sent you a link to reset your password'}, status=status.HTTP_200_OK)
-        # return Response({'message':'user with that email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
-    
-
-
-
-class PasswordResetConfirm(GenericAPIView):
-
-    def get(self, request, uidb64, token):
-        try:
-            user_id=smart_str(urlsafe_base64_decode(uidb64))
-            user=User.objects.get(id=user_id)
-
-            if not PasswordResetTokenGenerator().check_token(user, token):
-                return Response({'message':'token is invalid or has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-            return Response({'success':True, 'message':'credentials is valid', 'uidb64':uidb64, 'token':token}, status=status.HTTP_200_OK)
-
-        except DjangoUnicodeDecodeError as identifier:
-            return Response({'message':'token is invalid or has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-
-class SetNewPasswordView(GenericAPIView):
-    serializer_class=SetNewPasswordSerializer
-
-    def patch(self, request):
-        serializer=self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response({'success':True, 'message':"password reset is succesful"}, status=status.HTTP_200_OK)
-
-
-class TestingAuthenticatedReq(GenericAPIView):
+class Check(GenericAPIView):
+    '''
+		This view verify if user is log-in by checking their token
+        If token is valid, status code will be 200
+        If token is not valid, then user is rejected. Status code will be 401
+        Access should be done by attaching the request in the header, key: authorization, value: Bearer Access_token
+    '''
+    # Set permission to IsAuthenticated. 
     permission_classes=[IsAuthenticated]
 
     def get(self, request):
-
-        data={
-            'msg':'its works'
+        data = {
+            'msg':'User is log-in'
         }
         return Response(data, status=status.HTTP_200_OK)
 
 class LogoutApiView(GenericAPIView):
-    serializer_class=LogoutUserSerializer
+    '''
+		This view will blacklist the token, enforcing a pseudo-logout
+    '''
+    serializer_class = LogoutUserSerializer
+    
+	# Set permission to IsAuthenticated. 
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        # Assign serializer
         serializer=self.serializer_class(data=request.data)
+        
+		# Invoke validation method, use raise_exception to throw error if validation fail
         serializer.is_valid(raise_exception=True)
+        
+		# if validate success, save 
         serializer.save()
+        
+		# send success response
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class PasswordResetRequest(GenericAPIView):
+    '''
+		This view allow you to submit reset password request, if password is forgotten.
+    '''
+    serializer_class=PasswordResetRequestSerializer
+
+    def post(self, request):
+        # Assign serializer
+        serializer=self.serializer_class(data=request.data, context={'request':request})
+        
+		# Invoke validation method, use raise_exception to throw error if validation fail
+        serializer.is_valid(raise_exception=True)
+        
+        return Response({'message':'we have sent you a link to reset your password'}, status=status.HTTP_200_OK)
+        # return Response({'message':'user with that email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class PasswordResetConfirm(GenericAPIView):
+    '''
+		This view verify password reset link
+    '''
+    def get(self, request, uidb64, token):
+        try:
+            # decode the user id and get user from the parameter
+            user_id=smart_str(urlsafe_base64_decode(uidb64))
+            user=User.objects.get(id=user_id)
+
+			# verify token based on user and token, return error if invalid or expired
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                return Response({'message':'token is invalid or has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+			# if success, return the uidb and token which will be used later to actually reset the password
+            return Response({'success':True, 'message':'credentials is valid', 'uidb64':uidb64, 'token':token}, status=status.HTTP_200_OK)
+
+		# if user decode fail, return error message
+        except DjangoUnicodeDecodeError as identifier:
+            return Response({'message':'token is invalid or has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class SetNewPassword(GenericAPIView):
+    '''
+		This view reset the password
+    '''
+    serializer_class = SetNewPasswordSerializer
+
+    def patch(self, request):
+        # Assign serializer
+        serializer=self.serializer_class(data=request.data)
+        
+		# Invoke validation method, use raise_exception to throw error if validation fail
+        serializer.is_valid(raise_exception=True)
+        
+		# Return success message
+        return Response({'success':True, 'message':"password reset is succesful"}, status=status.HTTP_200_OK)
+
+
+
  
 
 

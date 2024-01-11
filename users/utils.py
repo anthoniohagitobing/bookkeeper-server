@@ -9,7 +9,7 @@ from users.models import User, OneTimePassword
 # Other import
 import random
 
-
+# Email utility function to set otp
 def send_generated_otp_to_email(email, request): 
     # Create subject, otp, current site
     subject = "One time passcode for Email verification"
@@ -30,7 +30,7 @@ def send_generated_otp_to_email(email, request):
     # d_email.send()
     d_email.send(fail_silently=True)
 
-
+# Email utility function to send email
 def send_normal_email(data):
     email=EmailMessage(
         subject=data['email_subject'],

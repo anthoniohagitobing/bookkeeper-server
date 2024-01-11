@@ -41,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 	# Import User manager
 	objects = UserManager()
   
-	# Create token function
+	# Create token manually
 	def tokens(self):    
 		refresh = RefreshToken.for_user(self)
 		return {

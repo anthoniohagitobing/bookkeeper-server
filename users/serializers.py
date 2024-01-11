@@ -54,112 +54,148 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.ModelSerializer):
+    # Custom fields validation. Note that password is only validated on write only, while the read_only is only validated when getting from database
     email = serializers.EmailField(max_length=255, min_length=6)
     password=serializers.CharField(max_length=68, write_only=True)
     full_name=serializers.CharField(max_length=255, read_only=True)
     access_token=serializers.CharField(max_length=255, read_only=True)
     refresh_token=serializers.CharField(max_length=255, read_only=True)
 
+    # Fields validation from table. Note that access_token and refresh_token does not exist on table, but added through custom field validation
     class Meta:
         model = User
         fields = ['email', 'password', 'full_name', 'access_token', 'refresh_token']
 
-    
-
+    # Email and password matching validation.
     def validate(self, attrs):
+        # Authenticate email, password and request
         email = attrs.get('email')
         password = attrs.get('password')
-        request=self.context.get('request')
+        request = self.context.get('request')
         user = authenticate(request, email=email, password=password)
+
+        # Check result. If not user, invalid credential. If not verified, email is not verified
         if not user:
             raise AuthenticationFailed("invalid credential try again")
         if not user.is_verified:
             raise AuthenticationFailed("Email is not verified")
-        tokens=user.tokens()
+        
+        # If authentication sucess, we invoke the tokens() method in the user model to generate token. 
+        tokens = user.tokens()
+
+        # Return dictionary. Note that get_full_name is a property in the model.
         return {
-            'email':user.email,
-            'full_name':user.get_full_name,
-            "access_token":str(tokens.get('access')),
-            "refresh_token":str(tokens.get('refresh'))
+            'email': user.email,
+            'full_name': user.get_full_name,
+            "access_token": str(tokens.get('access')),
+            "refresh_token": str(tokens.get('refresh'))
         }
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
+    # Custom fields validation.
     email = serializers.EmailField(max_length=255)
 
+    # Fields validation.
     class Meta:
         fields = ['email']
 
+    # Validate
     def validate(self, attrs):
-        
+        # Extract email
         email = attrs.get('email')
+
+        # Check if user exists
         if User.objects.filter(email=email).exists():
-            user= User.objects.get(email=email)
-            uidb64=urlsafe_base64_encode(smart_bytes(user.id))
+            # Generate custom url for reseting password, composing of user.id, token, domain
+            user = User.objects.get(email=email)
+            uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
-            request=self.context.get('request')
-            current_site=get_current_site(request).domain
-            relative_link =reverse('reset-password-confirm', kwargs={'uidb64':uidb64, 'token':token})
+            request = self.context.get('request')
+            current_site = get_current_site(request).domain
+            relative_link =reverse('password-reset-confirm', kwargs={'uidb64':uidb64, 'token':token})
             abslink=f"http://{current_site}{relative_link}"
-            print(abslink)
+
+            # Create email link and data
             email_body=f"Hi {user.first_name} use the link below to reset your password {abslink}"
-            data={
+            data = {
                 'email_body':email_body, 
                 'email_subject':"Reset your Password", 
                 'to_email':user.email
                 }
+            
+            # Use utility function to send email
             send_normal_email(data)
 
         return super().validate(attrs)
 
     
 class SetNewPasswordSerializer(serializers.Serializer):
+    # Custom fields validation. Data validation is only for write only, so when data is first inserted
     password=serializers.CharField(max_length=100, min_length=6, write_only=True)
     confirm_password=serializers.CharField(max_length=100, min_length=6, write_only=True)
     uidb64=serializers.CharField(min_length=1, write_only=True)
     token=serializers.CharField(min_length=3, write_only=True)
 
+    # Fields validation.
     class Meta:
         fields = ['password', 'confirm_password', 'uidb64', 'token']
 
+    # Validate if token and uid64 are valid, also validate if password and confirm_password match 
     def validate(self, attrs):
         try:
+            # Breakdown the data
             token=attrs.get('token')
             uidb64=attrs.get('uidb64')
             password=attrs.get('password')
             confirm_password=attrs.get('confirm_password')
 
-            user_id=force_str(urlsafe_base64_decode(uidb64))
-            user=User.objects.get(id=user_id)
+            # decode the user id and get user
+            user_id = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=user_id)
+
+            # reverify token based on user and token
             if not PasswordResetTokenGenerator().check_token(user, token):
                 raise AuthenticationFailed("reset link is invalid or has expired", 401)
+            
+            # check password and confirm_password
             if password != confirm_password:
                 raise AuthenticationFailed("passwords do not match")
+            
+            # if all checks passed, set password and then save
             user.set_password(password)
             user.save()
             return user
+        
+        # if anything fail, return authentication failed
         except Exception as e:
             return AuthenticationFailed("link is invalid or has expired")
 
 
     
 class LogoutUserSerializer(serializers.Serializer):
+    # Custom fields validation. Note that no field is required since we are not returning anything to views
     refresh_token=serializers.CharField()
 
+    # Create error message dictionary
     default_error_message = {
         'bad_token': ('Token is expired or invalid')
     }
 
+    # this validate and retrieve the refresh token data, 
     def validate(self, attrs):
+        # assign token to self so that it can be passed on later
         self.token = attrs.get('refresh_token')
-
         return attrs
 
     def save(self, **kwargs):
         try:
-            token=RefreshToken(self.token)
+            # Reconvert token and blacklist
+            token = RefreshToken(self.token)
             token.blacklist()
+        # Throw error if token cannot be blacklisted
         except TokenError:
+            # This will return message error from default_error_message
             return self.fail('bad_token')
 
     

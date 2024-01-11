@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 import os
 import dj_database_url
 # from decouple import config
@@ -41,23 +42,25 @@ EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 
 
-# Configuring debug and rest_framework
+# Configuring debug and rest_framework depending on environment
 if CURRENT_ENVIRONMENT == 'local':
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
-    # For rest framework
-    # this will only send json, not rest framwork special website
 
-    # REST_FRAMEWORK = {
-    #     'DEFAULT_PERMISSION_CLASSES': (
-    #         'rest_framework.permissions.IsAuthenticated',
-    #     ),
-    #     'DEFAULT_AUTHENTICATION_CLASSES': (
-    #         'rest_framework.authentication.TokenAuthentication',
-    #     ),
-    # }
+    # For rest framework
+    # Make rest framework use JWT for authentication
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
+        )
+    }
 elif CURRENT_ENVIRONMENT == 'heroku':
+    # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = False
+
+    # For rest framework
+    # This will only send json, not rest framwork special website
+    # Make rest framework use JWT for authentication
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
             'rest_framework.renderers.JSONRenderer',
@@ -65,12 +68,9 @@ elif CURRENT_ENVIRONMENT == 'heroku':
         'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.JSONParser',
         ),
-        # 'DEFAULT_PERMISSION_CLASSES': (
-        #     'rest_framework.permissions.IsAuthenticated',
-        # ),
-        # 'DEFAULT_AUTHENTICATION_CLASSES': (
-        #     'rest_framework.authentication.TokenAuthentication',
-        # ),
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
+        )
     }
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -79,9 +79,14 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 ALLOWED_HOSTS = ['bookkeeper-server-405b5350d93b.herokuapp.com', 'localhost', '127.0.0.1']
 
 
+# Configuring JWT
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
 
 # Application definition
-
 INSTALLED_APPS = [
     # Built-in django
     'django.contrib.admin',
@@ -94,6 +99,7 @@ INSTALLED_APPS = [
 
     # 3rd parth apps
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
 
     # Custom apps
