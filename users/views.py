@@ -14,7 +14,7 @@ import jwt
 from .validations import custom_validation, validate_email, validate_password
 
 
-class UserRegisteration(APIView):
+class UserRegister(APIView):
 	serializer_class = UserRegistrationSerializer
 	authentication_classes = (TokenAuthentication,)
 	permission_classes = (AllowAny,)

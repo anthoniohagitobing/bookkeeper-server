@@ -77,6 +77,7 @@ ALLOWED_HOSTS = ['bookkeeper-server-405b5350d93b.herokuapp.com', 'localhost', '1
 # Application definition
 
 INSTALLED_APPS = [
+    # Built-in django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -84,18 +85,23 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'whitenoise.runserver_nostatic',
+
+    # 3rd parth apps
     'rest_framework',
-    'api',
-    'trial',
+    'corsheaders',
+
+    # Custom apps
     'users',
+    'trial',
 ]
 
 # custom user model
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

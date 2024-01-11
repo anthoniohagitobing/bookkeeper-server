@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 
 UserModel = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-	# password = serializers.CharField(max_length=100, min_length=8, style={'input_type': 'password'})
+	password = serializers.CharField(max_length=100, min_length=8, style={'input_type': 'password'})
 	class Meta:
 		# model = get_user_model()
 		model = UserModel
