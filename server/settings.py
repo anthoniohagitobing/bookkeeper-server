@@ -145,6 +145,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'server.wsgi.application'
 
+# CORS
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+# CORS_ALLOW_CREDENTIALS = True
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:3000",
+# ]
+# ROOT_URLCONF = 'django_rest_auth.urls'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
