@@ -21,7 +21,7 @@ from multiprocessing import context
 
 
 # Create User
-class UserRegister(GenericAPIView):
+class UserRegisterView(GenericAPIView):
     '''
 		This view creates new user
     '''
@@ -51,16 +51,16 @@ class UserRegister(GenericAPIView):
             
 			# Return response
             return Response({
-                'data':user_data,
+                'data': user_data,
                 'message':'thanks for signing up a passcode has be sent to verify your email'
             }, status=status.HTTP_201_CREATED)
         
         # If validate did not pass, it will return error
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 			# this is not required as we already have raise_exception
 
 
-class VerifyEmail(GenericAPIView):
+class VerifyEmailView(GenericAPIView):
     '''
     	This view takes in otp and change the user verified to try if otp is correct
     '''
@@ -93,7 +93,7 @@ class VerifyEmail(GenericAPIView):
             return Response({'message':'passcode not provided'}, status=status.HTTP_400_BAD_REQUEST)
         
 
-class UserLogin(GenericAPIView):
+class UserLoginView(GenericAPIView):
     '''
     	This view allow user to log in
     '''
@@ -109,7 +109,7 @@ class UserLogin(GenericAPIView):
 		# Return data if is valid
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class Check(GenericAPIView):
+class CheckView(GenericAPIView):
     '''
 		This view verify if user is log-in by checking their token
         If token is valid, status code will be 200
@@ -125,7 +125,7 @@ class Check(GenericAPIView):
         }
         return Response(data, status=status.HTTP_200_OK)
 
-class LogoutApiView(GenericAPIView):
+class LogoutView(GenericAPIView):
     '''
 		This view will blacklist the token, enforcing a pseudo-logout
     '''
@@ -147,7 +147,7 @@ class LogoutApiView(GenericAPIView):
 		# send success response
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-class PasswordResetRequest(GenericAPIView):
+class PasswordResetRequestView(GenericAPIView):
     '''
 		This view allow you to submit reset password request, if password is forgotten.
     '''
@@ -163,7 +163,7 @@ class PasswordResetRequest(GenericAPIView):
         return Response({'message':'we have sent you a link to reset your password'}, status=status.HTTP_200_OK)
         # return Response({'message':'user with that email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
     
-class PasswordResetConfirm(GenericAPIView):
+class PasswordResetConfirmView(GenericAPIView):
     '''
 		This view verify password reset link
     '''
@@ -183,7 +183,7 @@ class PasswordResetConfirm(GenericAPIView):
         except DjangoUnicodeDecodeError as identifier:
             return Response({'message':'token is invalid or has expired'}, status=status.HTTP_401_UNAUTHORIZED)
 
-class SetNewPassword(GenericAPIView):
+class SetNewPasswordView(GenericAPIView):
     '''
 		This view reset the password
     '''

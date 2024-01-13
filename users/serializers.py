@@ -174,7 +174,7 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
     
 class LogoutUserSerializer(serializers.Serializer):
-    # Custom fields validation. Note that no field is required since we are not returning anything to views
+    # Custom fields validation
     refresh_token=serializers.CharField()
 
     # Create error message dictionary
