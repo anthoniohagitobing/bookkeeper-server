@@ -57,7 +57,7 @@ class UserRegisterView(GenericAPIView):
         
         # If validate did not pass, it will return error
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-			# this is not required as we already have raise_exception
+			# this is actually not required as we already have raise_exception
 
 
 class VerifyEmailView(GenericAPIView):
@@ -120,6 +120,7 @@ class CheckView(GenericAPIView):
     permission_classes=[IsAuthenticated]
 
     def get(self, request):
+        # print(request.headers)
         data = {
             'msg':'User is log-in'
         }

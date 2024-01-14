@@ -81,7 +81,8 @@ ALLOWED_HOSTS = ['bookkeeper-server-405b5350d93b.herokuapp.com', 'localhost', '1
 
 # Configuring JWT
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    # "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
@@ -125,7 +126,7 @@ MIDDLEWARE = [
 # For whitenoise
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-ROOT_URLCONF = 'server.urls'
+
 
 TEMPLATES = [
     {
@@ -147,14 +148,15 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
-# CORS_ALLOW_CREDENTIALS = True
-# CSRF_TRUSTED_ORIGINS = [
+CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOWED_ORIGINS = [
 #     "http://localhost:3000",
 # ]
-# ROOT_URLCONF = 'django_rest_auth.urls'
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+ROOT_URLCONF = 'server.urls'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
