@@ -19,9 +19,9 @@ urlpatterns = [
     path('check/', views.CheckView.as_view(), name='check'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
-    # Password reset
-    path('password-reset/', views.PasswordResetRequestView.as_view(), name='password-reset'),
-    path('password-reset-confirm/<uidb64>/<token>/', views.PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
+    # Reset Password 
+    path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot-password'),
+    path('reset-password/<uidb64>/<token>/', views.ResetPasswordView.as_view(), name='reset-password'),
     path('set-new-password/', views.SetNewPasswordView.as_view(), name='set-new-password'),
 ]
 

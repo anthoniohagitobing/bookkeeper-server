@@ -19,6 +19,12 @@ from users.utils import send_normal_email
 import json
 from dataclasses import field
 from string import ascii_lowercase, ascii_uppercase
+from dotenv import load_dotenv, find_dotenv
+import os
+
+# Load environment variables
+load_dotenv(find_dotenv())
+FRONT_END_URL = os.getenv('FRONT_END_URL')
 
 # Retrieve user model, not used for this project as simple User model can be used
 # UserModel = get_user_model()
@@ -92,7 +98,7 @@ class LoginSerializer(serializers.ModelSerializer):
         }
 
 
-class PasswordResetRequestSerializer(serializers.Serializer):
+class ForgotPasswordSerializer(serializers.Serializer):
     # Custom fields validation.
     email = serializers.EmailField(max_length=255)
 
@@ -112,9 +118,12 @@ class PasswordResetRequestSerializer(serializers.Serializer):
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
             request = self.context.get('request')
-            current_site = get_current_site(request).domain
-            relative_link =reverse('password-reset-confirm', kwargs={'uidb64':uidb64, 'token':token})
-            abslink=f"http://{current_site}{relative_link}"
+            # current_site = get_current_site(request).domain
+            current_site = FRONT_END_URL
+            relative_link = reverse('reset-password', kwargs={'uidb64':uidb64, 'token':token})
+            # relative_link = reverse('reset-password-confirm', kwargs={'uidb64':uidb64, 'token':token})
+            # abslink = f"http://{current_site}{relative_link}"
+            abslink = f"{current_site}{relative_link}"
 
             # Create email link and data
             email_body=f"Hi {user.first_name} use the link below to reset your password {abslink}"
@@ -122,7 +131,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
                 'email_body':email_body, 
                 'email_subject':"Reset your Password", 
                 'to_email':user.email
-                }
+            }
             
             # Use utility function to send email
             send_normal_email(data)

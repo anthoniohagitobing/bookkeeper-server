@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 # File import
-from users.serializers import PasswordResetRequestSerializer,LogoutUserSerializer, UserRegisterSerializer, LoginSerializer, SetNewPasswordSerializer
+from users.serializers import ForgotPasswordSerializer,LogoutUserSerializer, UserRegisterSerializer, LoginSerializer, SetNewPasswordSerializer
 from users.models import OneTimePassword, User
 from users.utils import send_generated_otp_to_email
 
@@ -148,11 +148,11 @@ class LogoutView(GenericAPIView):
 		# send success response
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-class PasswordResetRequestView(GenericAPIView):
+class ForgotPasswordView(GenericAPIView):
     '''
 		This view allow you to submit reset password request, if password is forgotten.
     '''
-    serializer_class=PasswordResetRequestSerializer
+    serializer_class = ForgotPasswordSerializer
 
     def post(self, request):
         # Assign serializer
@@ -164,7 +164,7 @@ class PasswordResetRequestView(GenericAPIView):
         return Response({'message':'we have sent you a link to reset your password'}, status=status.HTTP_200_OK)
         # return Response({'message':'user with that email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
     
-class PasswordResetConfirmView(GenericAPIView):
+class ResetPasswordView(GenericAPIView):
     '''
 		This view verify password reset link
     '''
