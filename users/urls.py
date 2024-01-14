@@ -6,13 +6,27 @@ from . import views
 # 	UserViewAPI,
 # 	UserLogoutViewAPI
 # )
+from rest_framework_simplejwt.views import (TokenRefreshView,)
 
 urlpatterns = [
-	path('register/', views.UserRegisteration.as_view(), name='register'),
-	path('login/', views.UserLogin.as_view(), name='login'),
-	path('logout/', views.UserLogout.as_view(), name='logout'),
-	path('view/', views.UserView.as_view(), name='user'),
+    # Standard auth
+	path('register/', views.UserRegisterView.as_view(), name='register'),
+    path('verify-email/', views.VerifyEmailView.as_view(), name='verify'),
+	path('login/', views.UserLoginView.as_view(), name='login'),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
+    
+	# Token check
+    path('check/', views.CheckView.as_view(), name='check'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Reset Password 
+    path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot-password'),
+    path('reset-password/<uidb64>/<token>/', views.ResetPasswordView.as_view(), name='reset-password'),
+    path('set-new-password/', views.SetNewPasswordView.as_view(), name='set-new-password'),
 ]
+
+
+
 
 # urlpatterns = [
 # 	path('register/', UserRegistrationAPIView.as_view()),
