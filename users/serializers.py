@@ -54,7 +54,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
-            password=validated_data.get('password')
+            password=validated_data.get('password'),
+
+            # This is for bypassing email auth. To bypass, set to True. Otherwise, set to False
+            is_verified=True,
+            # is_verified=False,
             )
         return user
 

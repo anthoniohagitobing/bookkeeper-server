@@ -39,21 +39,20 @@ class UserRegisterView(GenericAPIView):
             serializer.save()
             
 			# For no otp path,
-				# TODO: Bypass the token, need to add input for create user and set verified to true
-			# return Response({
-            #     'message':'thanks for signing up a passcode has be sent to verify your email'
-			# }, status=status.HTTP_201_CREATED)
+            return Response({
+                'message':'thanks for signing up, please log-in'
+			}, status=status.HTTP_201_CREATED)
 
 			# For otp path,
-			# Use serializer data to generate otp
-            user_data = serializer.data
-            send_generated_otp_to_email(user_data['email'], request)
+			# # Use serializer data to generate otp
+            # user_data = serializer.data
+            # send_generated_otp_to_email(user_data['email'], request)
             
-			# Return response
-            return Response({
-                'data': user_data,
-                'message':'thanks for signing up a passcode has be sent to verify your email'
-            }, status=status.HTTP_201_CREATED)
+			# # Return response
+            # return Response({
+            #     'data': user_data,
+            #     'message':'thanks for signing up a passcode has be sent to verify your email'
+            # }, status=status.HTTP_201_CREATED)
         
         # If validate did not pass, it will return error
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
