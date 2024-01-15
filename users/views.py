@@ -105,9 +105,31 @@ class UserLoginView(GenericAPIView):
         
 		# Invoke validation method, use raise_exception to throw error if validation fail
         serializer.is_valid(raise_exception=True)
-        
-		# Return data if is valid
+             
+    	# Return data if is valid, this is for local storage use
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # This is for using session storage and cookies, but disabled for now
+        # # Prepare sent_data, create response and set cookies
+        # sent_data = {
+        #     "email": serializer.data.get("email"),
+        #     "full_name": serializer.data.get("full_name"),
+        #     "access_token": serializer.data.get("access_token"),
+        #     "refresh_token": serializer.data.get("refresh_token")
+        # }
+        # response: Response = Response(sent_data, status=status.HTTP_200_OK)
+        # response.set_cookie(
+        #     key='refresh_token', 
+        #     value=serializer.data.get("refresh_token"), 
+        #     # httponly=True,
+        #     # secure=True,
+        #     # max_age= 1 * 24 * 60 * 60 * 1000, # 1 day
+        #     # max_age= 60 * 1000, # 1 minute
+        #     # samesite='Strict'
+        #     )
+        
+        # return response
+
 
 class CheckView(GenericAPIView):
     '''
