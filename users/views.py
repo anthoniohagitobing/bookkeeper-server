@@ -104,7 +104,7 @@ class UserLoginView(GenericAPIView):
         
 		# Invoke validation method, use raise_exception to throw error if validation fail
         serializer.is_valid(raise_exception=True)
-             
+        
     	# Return data if is valid, this is for local storage use
         return Response(serializer.data, status=status.HTTP_200_OK)
 
