@@ -16,7 +16,7 @@ class UserManager(BaseUserManager):
 		except ValidationError:
 			ValueError(_("please enter a valid email address"))
 
-	def create_user(self, email, first_name, last_name, password, **extra_fields):
+	def create_user(self, email, first_name, last_name, password, is_verified, **extra_fields):
 		"""
       		Create and save a user with the given email and password.
    		"""
@@ -35,7 +35,7 @@ class UserManager(BaseUserManager):
 			raise ValueError(_("Last name is required"))
 
 		# Create user. Note that password are built-in field and need to be set
-		user = self.model(email=email, first_name=first_name, last_name=last_name, **extra_fields)
+		user = self.model(email=email, first_name=first_name, last_name=last_name, is_verified=is_verified, **extra_fields)
 		user.set_password(password)
 
 		# Save user and return
@@ -51,6 +51,7 @@ class UserManager(BaseUserManager):
 		extra_fields.setdefault("is_staff", True)
 		extra_fields.setdefault("is_superuser", True)
 		extra_fields.setdefault("is_active", True)
+		extra_fields.setdefault("is_verified", True)
 		
 		# Validation to prevent superuser not created
 		if extra_fields.get("is_staff") is not True:
@@ -60,7 +61,6 @@ class UserManager(BaseUserManager):
 		
 		# Send to user function to create a user plues the extra field, resulting with superuser; save again; return
 		superuser = self.create_user(email, first_name, last_name, password, **extra_fields)
-		superuser.save(using=self._db)
 		return superuser
 
 

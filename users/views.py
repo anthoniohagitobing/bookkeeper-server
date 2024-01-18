@@ -39,21 +39,20 @@ class UserRegisterView(GenericAPIView):
             serializer.save()
             
 			# For no otp path,
-				# TODO: Bypass the token, need to add input for create user and set verified to true
-			# return Response({
-            #     'message':'thanks for signing up a passcode has be sent to verify your email'
-			# }, status=status.HTTP_201_CREATED)
+            return Response({
+                'message':'thanks for signing up, please log-in'
+			}, status=status.HTTP_201_CREATED)
 
 			# For otp path,
-			# Use serializer data to generate otp
-            user_data = serializer.data
-            send_generated_otp_to_email(user_data['email'], request)
+			# # Use serializer data to generate otp
+            # user_data = serializer.data
+            # send_generated_otp_to_email(user_data['email'], request)
             
-			# Return response
-            return Response({
-                'data': user_data,
-                'message':'thanks for signing up a passcode has be sent to verify your email'
-            }, status=status.HTTP_201_CREATED)
+			# # Return response
+            # return Response({
+            #     'data': user_data,
+            #     'message':'thanks for signing up a passcode has be sent to verify your email'
+            # }, status=status.HTTP_201_CREATED)
         
         # If validate did not pass, it will return error
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -106,8 +105,30 @@ class UserLoginView(GenericAPIView):
 		# Invoke validation method, use raise_exception to throw error if validation fail
         serializer.is_valid(raise_exception=True)
         
-		# Return data if is valid
+    	# Return data if is valid, this is for local storage use
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # This is for using session storage and cookies, but disabled for now
+        # # Prepare sent_data, create response and set cookies
+        # sent_data = {
+        #     "email": serializer.data.get("email"),
+        #     "full_name": serializer.data.get("full_name"),
+        #     "access_token": serializer.data.get("access_token"),
+        #     "refresh_token": serializer.data.get("refresh_token")
+        # }
+        # response: Response = Response(sent_data, status=status.HTTP_200_OK)
+        # response.set_cookie(
+        #     key='refresh_token', 
+        #     value=serializer.data.get("refresh_token"), 
+        #     # httponly=True,
+        #     # secure=True,
+        #     # max_age= 1 * 24 * 60 * 60 * 1000, # 1 day
+        #     # max_age= 60 * 1000, # 1 minute
+        #     # samesite='Strict'
+        #     )
+        
+        # return response
+
 
 class CheckView(GenericAPIView):
     '''

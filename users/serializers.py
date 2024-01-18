@@ -54,23 +54,29 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
-            password=validated_data.get('password')
+            password=validated_data.get('password'),
+
+            # This is for bypassing email auth. To bypass, set to True. Otherwise, set to False
+            is_verified=True,
+            # is_verified=False,
             )
         return user
 
 
 class LoginSerializer(serializers.ModelSerializer):
     # Custom fields validation. Note that password is only validated on write only, while the read_only is only validated when getting from database
-    email = serializers.EmailField(max_length=255, min_length=6)
+    # email = serializers.EmailField(max_length=255, min_length=6)
+    email = serializers.EmailField(max_length=255, min_length=6, write_only=True)
     password=serializers.CharField(max_length=68, write_only=True)
-    full_name=serializers.CharField(max_length=255, read_only=True)
+    # full_name=serializers.CharField(max_length=255, read_only=True)
     access_token=serializers.CharField(max_length=255, read_only=True)
     refresh_token=serializers.CharField(max_length=255, read_only=True)
 
     # Fields validation from table. Note that access_token and refresh_token does not exist on table, but added through custom field validation
     class Meta:
         model = User
-        fields = ['email', 'password', 'full_name', 'access_token', 'refresh_token']
+        # fields = ['email', 'password', 'full_name', 'access_token', 'refresh_token']
+        fields = ['email', 'password', 'access_token', 'refresh_token']
 
     # Email and password matching validation.
     def validate(self, attrs):
@@ -91,8 +97,8 @@ class LoginSerializer(serializers.ModelSerializer):
 
         # Return dictionary. Note that get_full_name is a property in the model.
         return {
-            'email': user.email,
-            'full_name': user.get_full_name,
+            # 'email': user.email,
+            # 'full_name': user.get_full_name,
             "access_token": str(tokens.get('access')),
             "refresh_token": str(tokens.get('refresh'))
         }
