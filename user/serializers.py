@@ -12,8 +12,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 # File import
-from users.models import User
-from users.utils import send_normal_email
+from user.models import User
+from user.utils import send_normal_email
 
 # Other import
 import json
@@ -48,7 +48,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         # return data back if password match
         return attrs
 
-    # Create User. This is invoke be serializer.save()
+    # Create User. This is a custom create. This is invoke be serializer.save()
     def create(self, validated_data):
         user = User.objects.create_user(
             email=validated_data['email'],
@@ -67,10 +67,10 @@ class LoginSerializer(serializers.ModelSerializer):
     # Custom fields validation. Note that password is only validated on write only, while the read_only is only validated when getting from database
     # email = serializers.EmailField(max_length=255, min_length=6)
     email = serializers.EmailField(max_length=255, min_length=6, write_only=True)
-    password=serializers.CharField(max_length=68, write_only=True)
-    # full_name=serializers.CharField(max_length=255, read_only=True)
-    access_token=serializers.CharField(max_length=255, read_only=True)
-    refresh_token=serializers.CharField(max_length=255, read_only=True)
+    password = serializers.CharField(max_length=68, write_only=True)
+    # full_name = serializers.CharField(max_length=255, read_only=True)
+    access_token = serializers.CharField(max_length=255, read_only=True)
+    refresh_token = serializers.CharField(max_length=255, read_only=True)
 
     # Fields validation from table. Note that access_token and refresh_token does not exist on table, but added through custom field validation
     class Meta:

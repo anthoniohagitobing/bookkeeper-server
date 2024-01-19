@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 
 # File import
-from users.models import User, OneTimePassword
+from user.models import User, OneTimePassword
 
 # Other import
 import random

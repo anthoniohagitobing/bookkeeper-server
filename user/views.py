@@ -11,9 +11,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 # File import
-from users.serializers import ForgotPasswordSerializer,LogoutUserSerializer, UserRegisterSerializer, LoginSerializer, SetNewPasswordSerializer
-from users.models import OneTimePassword, User
-from users.utils import send_generated_otp_to_email
+from user.serializers import ForgotPasswordSerializer,LogoutUserSerializer, UserRegisterSerializer, LoginSerializer, SetNewPasswordSerializer
+from user.models import OneTimePassword, User
+from user.utils import send_generated_otp_to_email
 
 # Other import
 from ast import Expression
@@ -35,7 +35,7 @@ class UserRegisterView(GenericAPIView):
         
 		# Invoke validation method, use raise_exception to throw error if validation fail
         if serializer.is_valid(raise_exception=True):
-            # Run save method to 
+            # Run save method 
             serializer.save()
             
 			# For no otp path,
@@ -55,7 +55,7 @@ class UserRegisterView(GenericAPIView):
             # }, status=status.HTTP_201_CREATED)
         
         # If validate did not pass, it will return error
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 			# this is actually not required as we already have raise_exception
 
 
@@ -143,7 +143,7 @@ class CheckView(GenericAPIView):
     def get(self, request):
         # print(request.headers)
         data = {
-            'msg':'User is log-in'
+            'message':'User is log-in'
         }
         return Response(data, status=status.HTTP_200_OK)
 
