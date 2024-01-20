@@ -105,12 +105,13 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Custom apps
-    'users',
+    'user',
     'trial',
+    "record",
 ]
 
 # custom user model
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
