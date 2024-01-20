@@ -35,14 +35,3 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ["id", "account", "transaction_type", "title", "date_time", "category", "input_type", "amount", "note"]
-
-
-    #         id = models.AutoField(primary_key=True, editable=False)
-    # account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    # transaction_type = models.CharField(max_length=10)
-    # title = models.CharField(max_length=255)
-    # date_time = models.DateTimeField()
-    # category = models.CharField(max_length=50)
-    # input_type = models.CharField(max_length=15)
-    # amount = models.DecimalField(max_digits=19, decimal_places=10)
-    # note = models.TextField(max_length=200, null=False, blank=True)
