@@ -13,8 +13,8 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError, AccessToke
 from rest_framework.authtoken.models import Token
 
 # File import
-from user.models import User
-from user.utils import send_normal_email
+from users.models import User
+from users.utils import send_normal_email
 
 # Other import
 import json

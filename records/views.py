@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 # File import 
-from record.serializers import AccountSerializer, TransactionSerializer
-from record.models import Account, Transaction
+from records.serializers import AccountSerializer, TransactionSerializer
+from records.models import Account, Transaction
 
 # Create Account
 class CreateAccountView(GenericAPIView):

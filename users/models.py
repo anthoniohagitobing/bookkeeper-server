@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # Manager import
-from user.managers import UserManager
+from users.managers import UserManager
 
 # Available auth provider object
 AUTH_PROVIDERS = {'email':'email', 'google':'google', 'github':'github', 'linkedin':'linkedin'}

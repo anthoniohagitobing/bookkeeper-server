@@ -12,9 +12,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 
 # File import
-from user.serializers import ForgotPasswordSerializer,LogoutUserSerializer, UserRegisterSerializer, LoginSerializer, SetNewPasswordSerializer, checkViewSerializer
-from user.models import OneTimePassword, User
-from user.utils import send_generated_otp_to_email
+from users.serializers import ForgotPasswordSerializer,LogoutUserSerializer, UserRegisterSerializer, LoginSerializer, SetNewPasswordSerializer, checkViewSerializer
+from users.models import OneTimePassword, User
+from users.utils import send_generated_otp_to_email
 
 # Other import
 from ast import Expression

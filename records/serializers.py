@@ -2,7 +2,7 @@
 from rest_framework import serializers, validators
 
 # File import
-from record.models import Account, Transaction
+from records.models import Account, Transaction
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
