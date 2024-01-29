@@ -37,7 +37,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     # Fields validation from table. Note that password2 does not exist on table, but added through custom field validation
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'password', 'password2']
+        # fields = ['email', 'first_name', 'last_name', 'password', 'password2']
+        fields = ['email', 'full_name', 'password', 'password2']
 
     # Password matching validation. This is custom object validation. Note that both table validation, field validation, custom validation are automatically triggered when serializer is run
     def validate(self, attrs):
@@ -52,8 +53,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(
             email=validated_data['email'],
-            first_name=validated_data.get('first_name'),
-            last_name=validated_data.get('last_name'),
+            # first_name=validated_data.get('first_name'),
+            # last_name=validated_data.get('last_name'),
+            full_name=validated_data.get('full_name'),
             password=validated_data.get('password'),
 
             # This is for bypassing email auth. To bypass, set to True. Otherwise, set to False
@@ -132,7 +134,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
             abslink = f"{current_site}{relative_link}"
 
             # Create email link and data
-            email_body=f"Hi {user.first_name} use the link below to reset your password {abslink}"
+            email_body=f"Hi {user.full_name} use the link below to reset your password {abslink}"
             data = {
                 'email_body':email_body, 
                 'email_subject':"Reset your Password", 

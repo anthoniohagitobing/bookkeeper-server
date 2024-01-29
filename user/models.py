@@ -19,8 +19,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 	id = models.AutoField(primary_key=True, editable=False)
 	email = models.EmailField(max_length=255, unique=True, verbose_name=_("Email Address"))
 	# username = models.CharField(max_length=100)
-	first_name = models.CharField(max_length=100, verbose_name=_("First Name"))
-	last_name = models.CharField(max_length=100, verbose_name=_("Last Name"))
+	# first_name = models.CharField(max_length=100, verbose_name=_("First Name"))
+	# last_name = models.CharField(max_length=100, verbose_name=_("Last Name"))
+	full_name = models.CharField(max_length=255, verbose_name=_("Full Name"))
+
 
 	# Supplementary fields
 	is_staff = models.BooleanField(default=False)
@@ -35,8 +37,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 	USERNAME_FIELD = 'email'
 
 	# Designate required fields. Note that field used as username is not required.
-	REQUIRED_FIELDS = ["first_name", "last_name"]
-	# REQUIRED_FIELDS = ['username']
+	# REQUIRED_FIELDS = ["first_name", "last_name"]
+	REQUIRED_FIELDS = ['full_name']
 
 	# Import User manager
 	objects = UserManager()
@@ -54,9 +56,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 		return self.email
 	
 	# Create property field. Note this can be invoke as a property, not as a function. Ex: "User.get_full_name", instead of "User.get_full_name()"
-	@property
-	def get_full_name(self):
-  		return f"{self.first_name.title()} {self.last_name.title()}"
+	# @property
+	# def get_full_name(self):
+  	# 	return f"{self.first_name.title()} {self.last_name.title()}"
 
 # OTP model
 class OneTimePassword(models.Model):
@@ -69,7 +71,8 @@ class OneTimePassword(models.Model):
 	
 	# Change display name in admin panel
 	def __str__(self):
-		return f"{self.user.first_name} - otp code"
+		# return f"{self.user.first_name} - otp code"
+		return f"{self.user.full_name} - otp code"
 
 
 

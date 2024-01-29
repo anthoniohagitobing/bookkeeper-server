@@ -16,7 +16,8 @@ class UserManager(BaseUserManager):
 		except ValidationError:
 			ValueError(_("please enter a valid email address"))
 
-	def create_user(self, email, first_name, last_name, password, is_verified, **extra_fields):
+	# def create_user(self, email, first_name, last_name, password, is_verified, **extra_fields):
+	def create_user(self, email, full_name, password, is_verified, **extra_fields):
 		"""
       		Create and save a user with the given email and password.
    		"""
@@ -29,20 +30,24 @@ class UserManager(BaseUserManager):
 			raise ValueError(_('A user email is required.'))
 		if not password:
 			raise ValueError(_('A user password is required.'))
-		if not first_name:
-			raise ValueError(_("First name is required"))
-		if not last_name:
-			raise ValueError(_("Last name is required"))
+		# if not first_name:
+		# 	raise ValueError(_("First name is required"))
+		# if not last_name:
+		# 	raise ValueError(_("Last name is required"))
+		if not full_name:
+			raise ValueError(_("Full name is required"))
 
 		# Create user. Note that password are built-in field and need to be set
-		user = self.model(email=email, first_name=first_name, last_name=last_name, is_verified=is_verified, **extra_fields)
+		# user = self.model(email=email, first_name=first_name, last_name=last_name, is_verified=is_verified, **extra_fields)
+		user = self.model(email=email, full_name=full_name, is_verified=is_verified, **extra_fields)
 		user.set_password(password)
 
 		# Save user and return
 		user.save(using=self._db)
 		return user
 
-	def create_superuser(self, email, first_name, last_name, password, **extra_fields):
+	# def create_superuser(self, email, first_name, last_name, password, **extra_fields):
+	def create_superuser(self, email, full_name, password, **extra_fields):
 		"""
       		Create and save a SuperUser with the given email and password.
     	"""
@@ -60,7 +65,8 @@ class UserManager(BaseUserManager):
 			raise ValueError(_("Superuser must have is_superuser=True."))
 		
 		# Send to user function to create a user plues the extra field, resulting with superuser; save again; return
-		superuser = self.create_user(email, first_name, last_name, password, **extra_fields)
+		# superuser = self.create_user(email, first_name, last_name, password, **extra_fields)
+		superuser = self.create_user(email, full_name, password, **extra_fields)
 		return superuser
 
 

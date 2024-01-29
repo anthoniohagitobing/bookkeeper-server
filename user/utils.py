@@ -18,7 +18,7 @@ def send_generated_otp_to_email(email, request):
 
     # Retrieve user data based on email and create email body
     user = User.objects.get(email=email)
-    email_body = f"Hi {user.first_name} thanks for signing up on {current_site} please verify your email with the \n one time passcode {otp}"
+    email_body = f"Hi {user.full_name} thanks for signing up on {current_site} please verify your email with the \n one time passcode {otp}"
     # from_email = settings.EMAIL_HOST
     from_email = settings.DEFAULT_FROM_EMAIL
 
