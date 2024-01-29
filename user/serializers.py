@@ -9,7 +9,8 @@ from django.urls import reverse
 # Rest import
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError, AccessToken
+from rest_framework.authtoken.models import Token
 
 # File import
 from user.models import User
@@ -100,11 +101,55 @@ class LoginSerializer(serializers.ModelSerializer):
         # Return dictionary. Note that get_full_name is a property in the model.
         return {
             # 'email': user.email,
-            # 'full_name': user.get_full_name,
+            # 'full_name': user.full_name,
             "access_token": str(tokens.get('access')),
             "refresh_token": str(tokens.get('refresh'))
         }
 
+class checkViewSerializer(serializers.Serializer):
+    # access_token = serializers.CharField()
+    access_token = serializers.CharField(write_only=True)
+    email = serializers.CharField(read_only=True)
+    full_name = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['email', 'full_name', 'access_token']
+
+    def validate(self, attrs):
+        token_str = attrs.get('access_token')
+        access_token = AccessToken(token_str)
+        user = User.objects.get(id=access_token['user_id'])
+        return {
+            "email": user.email,
+            "full_name": user.full_name
+        }
+
+class LogoutUserSerializer(serializers.Serializer):
+    # Custom fields validation
+    refresh_token=serializers.CharField()
+
+    # this validate and retrieve the refresh token data, 
+    def validate(self, attrs):
+        # assign token to self so that it can be passed on later
+        self.token = attrs.get('refresh_token')
+
+        # Create error message dictionary
+        default_error_messages = {
+            'bad_token': ('Token is expired or invalid')
+        }
+        self.error_messages = default_error_messages
+        return attrs
+
+    def save(self, **kwargs):
+        try:
+            # Reconvert token and blacklist
+            token = RefreshToken(self.token)
+            token.blacklist()
+        # Throw error if token cannot be blacklisted
+        except TokenError:
+            # This will return message error from default_error_message
+            return self.fail('bad_token')
 
 class ForgotPasswordSerializer(serializers.Serializer):
     # Custom fields validation.
@@ -190,30 +235,7 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
 
     
-class LogoutUserSerializer(serializers.Serializer):
-    # Custom fields validation
-    refresh_token=serializers.CharField()
 
-    # Create error message dictionary
-    default_error_message = {
-        'bad_token': ('Token is expired or invalid')
-    }
-
-    # this validate and retrieve the refresh token data, 
-    def validate(self, attrs):
-        # assign token to self so that it can be passed on later
-        self.token = attrs.get('refresh_token')
-        return attrs
-
-    def save(self, **kwargs):
-        try:
-            # Reconvert token and blacklist
-            token = RefreshToken(self.token)
-            token.blacklist()
-        # Throw error if token cannot be blacklisted
-        except TokenError:
-            # This will return message error from default_error_message
-            return self.fail('bad_token')
 
     
 

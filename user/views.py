@@ -9,9 +9,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
 
 # File import
-from user.serializers import ForgotPasswordSerializer,LogoutUserSerializer, UserRegisterSerializer, LoginSerializer, SetNewPasswordSerializer
+from user.serializers import ForgotPasswordSerializer,LogoutUserSerializer, UserRegisterSerializer, LoginSerializer, SetNewPasswordSerializer, checkViewSerializer
 from user.models import OneTimePassword, User
 from user.utils import send_generated_otp_to_email
 
@@ -140,12 +141,25 @@ class CheckView(GenericAPIView):
     # Set permission to IsAuthenticated. 
     permission_classes=[IsAuthenticated]
 
-    def get(self, request):
-        # print(request.headers)
-        data = {
-            'message':'User is log-in'
-        }
-        return Response(data, status=status.HTTP_200_OK)
+    serializer_class = checkViewSerializer
+    # queryset = User.objects
+
+    def post(self, request):
+        try:
+            serializer=self.serializer_class(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            
+            # data = {
+            #     'message':'User is log-in'
+            # }  
+            # return Response(data, status=status.HTTP_200_OK)
+        except:
+            # Return error if access token is invalid
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+
+
 
 class LogoutView(GenericAPIView):
     '''
